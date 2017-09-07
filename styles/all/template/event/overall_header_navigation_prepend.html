@@ -1,0 +1,7 @@
+<!-- IF S_USER_LOGGED_IN and U_CAN_SEE and !U_MANAGER-->
+    <li class="small-icon icon-faq no-bulletin"><a href="{U_CERTIFICATIONS_PAGE}"><i class="icon fa-check-square fa-fw" aria-hidden="true"></i> {L_CERTIFICATIONS_PAGE}</a></li>
+<!-- ENDIF -->
+
+<!-- IF S_USER_LOGGED_IN and U_MANAGER -->
+    <li class="small-icon icon-faq no-bulletin"><a href="{U_CERTIFICATION_MANAGEMENT}"><i class="icon fa-check-square fa-fw" aria-hidden="true"></i> {L_CERTIFICATIONS_PAGE}</a></li>
+<!-- ENDIF -->

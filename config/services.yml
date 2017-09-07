@@ -1,0 +1,17 @@
+services:
+    taitai42.certifications.controller:
+        class: taitai42\certifications\controller\main
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@controller.helper'
+            - '@template'
+            - '@user'
+    taitai42.certifications.listener:
+        class: taitai42\certifications\event\main_listener
+        arguments:
+            - '@controller.helper'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }

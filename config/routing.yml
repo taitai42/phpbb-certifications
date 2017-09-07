@@ -1,0 +1,20 @@
+certifications_user:
+    path: /certifications
+    defaults: { _controller: taitai42.certifications.controller:handle }
+    methods: [GET]
+
+certifications_management:
+    path: /certification/manage/
+    defaults: { _controller: taitai42.certifications.controller:manage }
+    methods: [GET]
+
+certifications_management_submit:
+    path: /certification/manage/
+    defaults: { _controller: taitai42.certifications.controller:saveCreneaux }
+    methods: [POST]
+
+certifications_user_submit:
+    path: /certifications
+    defaults: { _controller: taitai42.certifications.controller:submit }
+    methods: [POST]
+
