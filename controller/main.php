@@ -94,19 +94,19 @@ class main
 
         $timestamp_start = strtotime("monday this week");
         $timestamp_end = strtotime("monday next week");
-        $sql = "delete from {$table_prefix}certifications_creneaux where " . $this->db->sql_build_array("SELECT", [
-                'user_id' => $this->user->data['user_id'],
-            ]) . " and date_start > $timestamp_start 
-                   and date_end < $timestamp_end";
 
-        $this->db->sql_query($sql);
-        foreach (array_values($symfony_request->request->get('slot', [])) as $slot) {
-            if ($slot['date_start'] == 0 || $slot['date_end'] == 0 || $slot['time_start'] == 0 || $slot['time_end'] == 0)
-                continue;
-            $timestamp_start = DateTime::createFromFormat('d/m/Y H:i', $slot['date_start'] . " " . $slot['time_start'], new \DateTimeZone($this->user->data['user_timezone']));
-            $timestamp_end = DateTime::createFromFormat('d/m/Y H:i', $slot['date_end'] . " " . $slot['time_end'], new \DateTimeZone($this->user->data['user_timezone']));
-            $sql = "insert into {$table_prefix}certifications_creneaux values (null, {$timestamp_start->getTimestamp()}, {$timestamp_end->getTimestamp()}, {$this->user->data['user_id']})";
-            $this->db->sql_query($sql);
+        $this->removeOldSlots($table_prefix, $timestamp_start, $timestamp_end);
+
+        $dates = $this->getDatesFromRequest($symfony_request);
+
+        foreach ($dates as $date) {
+            $timestamp_start = $date['start'];
+            $timestamp_end = $date['end'];
+
+            while ($timestamp_start != $timestamp_end) {
+                $sql = "insert into {$table_prefix}certifications_creneaux values (null, {$timestamp_start->getTimestamp()}, {$timestamp_start->add(new \DateInterval('PT30M'))->getTimestamp()}, {$this->user->data['user_id']})";
+                $this->db->sql_query($sql);
+            }
         }
 
         return redirect('/certification/manage/');
@@ -129,14 +129,13 @@ class main
         while ($row = $this->db->sql_fetchrow($result)) {
             $date_start = (new DateTime())->setTimestamp($row['date_start']);
             $date_end = (new DateTime())->setTimestamp($row['date_end']);
-            while($date_start <= $date_end) {
-                $this->template->assign_block_vars('creneaux', [
-                    'date_start'  => $date_start->format('l j F'),
-                    'time_start'  => $date_start->format('H:i'),
-                    'time_end'    => $date_start->add(new \DateInterval("PT30M"))->format('H:i'),
-                    'date_end'    => $date_start->format('d/m/Y'),
-                ]);
-            }
+
+            $this->template->assign_block_vars('creneaux', [
+                'date_start' => $date_start->format('l j F'),
+                'time_start' => $date_start->format('H:i'),
+                'time_end'   => $date_end->format('H:i'),
+                'date_end'   => $date_end->format('d/m/Y'),
+            ]);
             $i++;
         }
     }
@@ -209,5 +208,71 @@ class main
             ]);
             $i++;
         }
+    }
+
+    /**
+     * @param $table_prefix
+     * @param $timestamp_start
+     * @param $timestamp_end
+     *
+     * @return string
+     */
+    public function removeOldSlots($table_prefix, $timestamp_start, $timestamp_end)
+    {
+        $sql = "delete from {$table_prefix}certifications_creneaux where " . $this->db->sql_build_array("SELECT", [
+                'user_id' => $this->user->data['user_id'],
+            ]) . " and date_start > $timestamp_start 
+                   and date_end < $timestamp_end";
+
+        $this->db->sql_query($sql);
+
+        return $sql;
+    }
+
+    /**
+     * @param $symfony_request
+     *
+     * @return array
+     */
+    public function getDatesFromRequest($symfony_request)
+    {
+        $dates = [];
+
+        $params = array_values($symfony_request->request->get('slot', []));
+        foreach ($params as $slot) {
+           // echo '<pre>';var_dump(array_values($symfony_request->request->get('slot', [])));die;
+            if ($slot['date_start'] === "" || $slot['date_end'] === "" || $slot['time_start'] === "" || $slot['time_end'] === "")
+                continue;
+            $timestamp_start = DateTime::createFromFormat('d/m/Y H:i', $slot['date_start'] . " " . $slot['time_start'], new \DateTimeZone($this->user->data['user_timezone']));
+            $timestamp_end = DateTime::createFromFormat('d/m/Y H:i', $slot['date_end'] . " " . $slot['time_end'], new \DateTimeZone($this->user->data['user_timezone']));
+            $dates[] = [
+                'start' => $timestamp_start,
+                'end'   => $timestamp_end,
+            ];
+        }
+
+        return $this->removeOverlappedDates($dates);
+    }
+
+    private function removeOverlappedDates($dates)
+    {
+        for ($i = 0; $i < count($dates); $i++) {
+            $j = $i + 1;
+            if (!isset($dates[$j])) {
+                break;
+            }
+            if ($dates[$j]['start']->getTimestamp() >= $dates[$i]['start']->getTimestamp() &&
+                $dates[$j]['start']->getTimestamp() < $dates[$i]['end']->getTimestamp()
+            ) {
+                if ($dates[$j]['end']->getTimestamp() > $dates[$i]['end']->getTimestamp()) {
+                    $dates[$i]['end'] = $dates[$j]['end'];
+                }
+                unset($dates[$j]);
+
+                return $this->removeOverlappedDates(array_values($dates));
+            }
+        }
+
+        return $dates;
     }
 }

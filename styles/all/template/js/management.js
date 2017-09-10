@@ -45,11 +45,13 @@ $(function () {
         $(this).closest('div').remove();
     });
 
+    if (typeof added == 'undefined') {
+        var added = 0;
+    }
+
     $("#addcreneau").on('click', function (e) {
         e.preventDefault();
-        if (added > 0) {
-            $(".creneaux").append('<br>');
-        }
+
         added++;
 
         $(".creneaux").append('<div id="added' + added + '">' + tocopy + '</div> <br>');

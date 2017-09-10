@@ -13,6 +13,7 @@
     ensuite
     pour ... du blabla qui explique la procedure de verification</p>
 
+{% if loops.creneaux|length > 0 %}
 <form action="" method="POST" enctype="multipart/form-data">
 
     <fieldset>
@@ -39,7 +40,7 @@
                         {% set data = slot['date_start']%}
                         <b>{{ data}} </b><br>
                     {% endif %}
-                <h4 style="display: inline"><span data-start="{{ slot['date_start']}} {{slot['time_start']}}"
+                <h4 style="display: inline"><span data-id="{{slot['creneaux_id']}}"
                                                   class="label label-default">{{slot['time_start']}} - {{slot['time_end']}} </span>
                 </h4>
                 {% endfor %}
@@ -60,4 +61,8 @@
         </dl>
     </fieldset>
 </form>
+{% else %}
+<p>Desole, il n'y a aucun creneau de certification disponible pour le moment, veuillez revenir plus tard
+    ou contacter un membre du comite de certification!</p>
+{% endif %}
 <!-- INCLUDE overall_footer.html -->
