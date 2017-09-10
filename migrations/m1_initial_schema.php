@@ -29,7 +29,8 @@ class m1_initial_schema extends \phpbb\db\migration\migration
                 $this->table_prefix . 'certifications_creneaux'   => [
                     'COLUMNS'     => [
                         'creneaux_id' => ['UINT', null, 'auto_increment'],
-                        'timeslots'   => ['TEXT', ''],
+                        'date_start'  => ['TIMESTAMP', null],
+                        'date_end'    => ['TIMESTAMP', null],
                         'user_id'     => ['UINT', null],
                     ],
                     'PRIMARY_KEY' => 'creneaux_id',
@@ -37,7 +38,8 @@ class m1_initial_schema extends \phpbb\db\migration\migration
                 $this->table_prefix . 'certifications_interviews' => [
                     'COLUMNS'     => [
                         'interview_id'   => ['UINT', null, 'auto_increment'],
-                        'timeslot'       => ['TEXT', ''],
+                        'date_start'     => ['TIMESTAMP', null],
+                        'date_end'       => ['TIMESTAMP', null],
                         'user_id'        => ['UINT', null],
                         'interviewer_id' => ['UINT', null],
                     ],

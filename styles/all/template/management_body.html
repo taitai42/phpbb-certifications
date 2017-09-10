@@ -11,23 +11,41 @@
 <h3> Creneaux de disponibilites</h3>
 
 <br><br>
-<p> merci de definir les crenaux auxquels vous etes disponibles.
+<p> merci de definir les crenaux auxquels vous etes disponibles cette semaine.
 </p>
 
 <form action="" method="POST" class="form" enctype="multipart/form-data">
 
     <fieldset id="crenaux">
         <div class="form-inline creneaux">
-            <div class="tocopy">
-            <label for="">Creneau</label>
-            de <input name="slot[0][date_start]" type="text" class="date start form-control " style="width: 15%"/>
-            <input name="slot[0][time_start]" type="text" class="time start form-control"  style="width: 15%" /> à <input name="slot[0][date_end]" type="text"  style="width: 15%" class="time end form-control"/>
-            <input name="slot[0][time_end]" type="text"   style="width: 15%" class="date end form-control"/>
+            {% for slot in loops.creneaux %}
+            <div id="added{{loop['index']}}" class="added">
+                <label for="">Creneau</label>
+                de <input name="slot[{{loop['index']}}][date_start]" value="{{slot['date_start']}}" type="text" class="date start form-control " style="width: 15%"/>
+                <input name="slot[{{loop['index']}}][time_start]" value="{{slot['time_start']}}" type="text" class="time start form-control" style="width: 15%"/> à
+                <input name="slot[{{loop['index']}}][time_end]" value="{{slot['time_end']}}" type="text" style="width: 15%" class="time end form-control"/>
+                <input name="slot[{{loop['index']}}][date_end]" value="{{slot['date_end']}}" type="text" style="width: 15%" class="date end form-control"/>
+                <button type="submit" class="btn btn-danger delcreneau">- supprimer le creneau</button>
+            </div>
+            <br>
+
+            {% endfor %}
+            <div class="tocopy added">
+                <label for="">Creneau</label>
+                de <input name="slot[0][date_start]" type="text" class="date start form-control " style="width: 15%"/>
+                <input name="slot[0][time_start]" type="text" class="time start form-control" style="width: 15%"/> à
+                <input name="slot[0][time_end]" type="text" style="width: 15%" class="time end form-control"/>
+                <input name="slot[0][date_end]" type="text" style="width: 15%" class="date end form-control"/>
                 <button type="submit" class="btn btn-danger delcreneau">- supprimer le creneau</button>
             </div>
             <br>
 
 
+            {% if loops.creneaux|length > 0%}
+            <script>
+                var added = {{ loops.creneaux|length + 1}};
+            </script>
+            {% endif %}
         </div>
         <button type="submit" class="btn btn-info pull-right" id="addcreneau">+ ajouter un creneau</button>
 
