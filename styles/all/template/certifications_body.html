@@ -9,8 +9,9 @@
     payer de la coke et un yacht
 </p>
 
-<p> Pour proceder a votre certifications, veuillez remplir le formulaire ci-dessous, une administratrice vous contactera ensuite
-pour ... du blabla qui explique la procedure de verification</p>
+<p> Pour proceder a votre certifications, veuillez remplir le formulaire ci-dessous, une administratrice vous contactera
+    ensuite
+    pour ... du blabla qui explique la procedure de verification</p>
 
 <form action="" method="POST" enctype="multipart/form-data">
 
@@ -31,8 +32,16 @@ pour ... du blabla qui explique la procedure de verification</p>
                 Choisir un creneau
             </dt>
             <dd>
+                {% set data = "" %}
                 {% for slot in loops.creneaux %}
-                    <h4 style="display: inline"><span data-id="{{slot['creneaux_id']}}" class="label label-default">{{ slot['date_start']}} {{slot['time_start']}} - {{ slot['date_end']}} {{slot['time_end']}} </span></h4>
+                    {% if slot['date_start'] is not same as(data) %}
+                {% if loop['index0'] > 0%} <br><br> {%endif%}
+                        {% set data = slot['date_start']%}
+                        <b>{{ data}} </b><br>
+                    {% endif %}
+                <h4 style="display: inline"><span data-start="{{ slot['date_start']}} {{slot['time_start']}}"
+                                                  class="label label-default">{{slot['time_start']}} - {{slot['time_end']}} </span>
+                </h4>
                 {% endfor %}
                 <input type="hidden" name="slot">
             </dd>

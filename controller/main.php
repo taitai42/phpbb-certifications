@@ -121,7 +121,7 @@ class main
     {
         $sql = "select * from {$table_prefix}certifications_creneaux where 
              date_start > $timestamp_start 
-            and date_end < $timestamp_end";
+            and date_end < $timestamp_end ORDER by date_start";
 
         $result = $this->db->sql_query($sql);
         $i = 0;
@@ -129,13 +129,14 @@ class main
         while ($row = $this->db->sql_fetchrow($result)) {
             $date_start = (new DateTime())->setTimestamp($row['date_start']);
             $date_end = (new DateTime())->setTimestamp($row['date_end']);
-            $this->template->assign_block_vars('creneaux', [
-                'creneaux_id'         => $row['creneaux_id'],
-                'date_start' => $date_start->format('d/m/Y'),
-                'date_end'   => $date_end->format('d/m/Y'),
-                'time_start' => $date_start->format('H:i'),
-                'time_end'   => $date_end->format('H:i'),
-            ]);
+            while($date_start <= $date_end) {
+                $this->template->assign_block_vars('creneaux', [
+                    'date_start'  => $date_start->format('l j F'),
+                    'time_start'  => $date_start->format('H:i'),
+                    'time_end'    => $date_start->add(new \DateInterval("PT30M"))->format('H:i'),
+                    'date_end'    => $date_start->format('d/m/Y'),
+                ]);
+            }
             $i++;
         }
     }
