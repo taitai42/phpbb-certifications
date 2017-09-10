@@ -50,6 +50,15 @@ class main
 
     public function handle()
     {
+        global $table_prefix;
+
+        $timestamp_start = strtotime("monday this week");
+        $timestamp_end = strtotime("monday next week");
+
+        $this->prepareInterviews($table_prefix, $timestamp_start, $timestamp_end);
+
+        $this->prepareSlots($table_prefix, $timestamp_start, $timestamp_end);
+
         return $this->helper->render('certifications_body.html');
     }
 
@@ -67,40 +76,12 @@ class main
         $timestamp_start = strtotime("monday this week");
         $timestamp_end = strtotime("monday next week");
 
-        $sql = "select i.*, u.username as user from {$table_prefix}certifications_interviews  i 
-        left JOIN " . USERS_TABLE . " u on u.user_id = i.user_id
-          where " . $this->db->sql_build_array("SELECT", ['i.interviewer_id' => $this->user->data['user_id']]) .
-            " and date_start > $timestamp_start 
-              and date_end < $timestamp_end";
-        $result = $this->db->sql_query($sql);
-        $results = [];
-        while ($row = $this->db->sql_fetchrow($result)) {
-            $results[] = $row;
-        }
+        $this->prepareManageInterviews($table_prefix, $timestamp_start, $timestamp_end);
 
-        $sql = "select * from {$table_prefix}certifications_creneaux where " .
-            $this->db->sql_build_array("SELECT", ['user_id' => $this->user->data['user_id']]) .
-            " and date_start > $timestamp_start 
-              and date_end < $timestamp_end";
-        $result = $this->db->sql_query($sql);
-        $creneaux = [];
-        $i = 0;
-        while ($row = $this->db->sql_fetchrow($result)) {
-            $date_start = (new DateTime())->setTimestamp($row['date_start']);
-            $date_end = (new DateTime())->setTimestamp($row['date_end']);
-            $this->template->assign_block_vars('creneaux', [
-                'date_start' => $date_start->format('d/m/Y'),
-                'date_end'   => $date_end->format('d/m/Y'),
-                'time_start' => $date_start->format('H:i'),
-                'time_end'   => $date_end->format('H:i'),
-            ]);
-            $i++;
-        }
+        $this->prepareManageSlots($table_prefix, $timestamp_start, $timestamp_end);
 
         $this->template->assign_vars([
             'U_MANAGEMENT_PAGE' => true,
-            'U_INTERVIEW_LIST'  => $results,
-            'U_CRENEAUX_LIST'   => $creneaux,
         ]);
 
         return $this->helper->render('management_body.html');
@@ -129,5 +110,103 @@ class main
         }
 
         return redirect('/certification/manage/');
+    }
+
+    /**
+     * @param $table_prefix
+     * @param $timestamp_start
+     * @param $timestamp_end
+     */
+    public function prepareSlots($table_prefix, $timestamp_start, $timestamp_end)
+    {
+        $sql = "select * from {$table_prefix}certifications_creneaux where 
+             date_start > $timestamp_start 
+            and date_end < $timestamp_end";
+
+        $result = $this->db->sql_query($sql);
+        $i = 0;
+
+        while ($row = $this->db->sql_fetchrow($result)) {
+            $date_start = (new DateTime())->setTimestamp($row['date_start']);
+            $date_end = (new DateTime())->setTimestamp($row['date_end']);
+            $this->template->assign_block_vars('creneaux', [
+                'creneaux_id'         => $row['creneaux_id'],
+                'date_start' => $date_start->format('d/m/Y'),
+                'date_end'   => $date_end->format('d/m/Y'),
+                'time_start' => $date_start->format('H:i'),
+                'time_end'   => $date_end->format('H:i'),
+            ]);
+            $i++;
+        }
+    }
+
+    /**
+     * @param $table_prefix
+     * @param $timestamp_start
+     * @param $timestamp_end
+     */
+    public function prepareInterviews($table_prefix, $timestamp_start, $timestamp_end)
+    {
+        $sql = "select i.*, u.username as user from {$table_prefix}certifications_interviews  i 
+        left JOIN " . USERS_TABLE . " u on u.user_id = i.interviewer_id
+          where " . $this->db->sql_build_array("SELECT", ['i.user_id' => $this->user->data['user_id']]) .
+            " and date_start > $timestamp_start 
+              and date_end < $timestamp_end";
+
+        $result = $this->db->sql_query($sql);
+
+        while ($row = $this->db->sql_fetchrow($result)) {
+            $this->template->assign_block_vars('interviews', [
+            ]);
+        }
+    }
+
+    /**
+     * @param $table_prefix
+     * @param $timestamp_start
+     * @param $timestamp_end
+     *
+     * @return array
+     */
+    public function prepareManageInterviews($table_prefix, $timestamp_start, $timestamp_end)
+    {
+        $sql = "select i.*, u.username as user from {$table_prefix}certifications_interviews  i 
+        left JOIN " . USERS_TABLE . " u on u.user_id = i.user_id
+          where " . $this->db->sql_build_array("SELECT", ['i.interviewer_id' => $this->user->data['user_id']]) .
+            " and date_start > $timestamp_start 
+              and date_end < $timestamp_end";
+        $result = $this->db->sql_query($sql);
+        while ($row = $this->db->sql_fetchrow($result)) {
+            $this->template->assign_block_vars('interviews', [
+            ]);
+        }
+
+    }
+
+    /**
+     * @param $table_prefix
+     * @param $timestamp_start
+     * @param $timestamp_end
+     */
+    public function prepareManageSlots($table_prefix, $timestamp_start, $timestamp_end)
+    {
+        $sql = "select * from {$table_prefix}certifications_creneaux where " .
+            $this->db->sql_build_array("SELECT", ['user_id' => $this->user->data['user_id']]) .
+            " and date_start > $timestamp_start 
+              and date_end < $timestamp_end";
+        $result = $this->db->sql_query($sql);
+        $i = 0;
+
+        while ($row = $this->db->sql_fetchrow($result)) {
+            $date_start = (new DateTime())->setTimestamp($row['date_start']);
+            $date_end = (new DateTime())->setTimestamp($row['date_end']);
+            $this->template->assign_block_vars('creneaux', [
+                'date_start' => $date_start->format('d/m/Y'),
+                'date_end'   => $date_end->format('d/m/Y'),
+                'time_start' => $date_start->format('H:i'),
+                'time_end'   => $date_end->format('H:i'),
+            ]);
+            $i++;
+        }
     }
 }

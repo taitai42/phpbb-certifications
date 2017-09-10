@@ -28,10 +28,13 @@ pour ... du blabla qui explique la procedure de verification</p>
 
         <dl>
             <dt>
-                Disponibilités
+                Choisir un creneau
             </dt>
             <dd>
-                <textarea name="message" id="message" style="height: 9em;" rows="15" cols="30" tabindex="4"class="inputbox"></textarea>
+                {% for slot in loops.creneaux %}
+                    <h4 style="display: inline"><span data-id="{{slot['creneaux_id']}}" class="label label-default">{{ slot['date_start']}} {{slot['time_start']}} - {{ slot['date_end']}} {{slot['time_end']}} </span></h4>
+                {% endfor %}
+                <input type="hidden" name="slot">
             </dd>
 
 
