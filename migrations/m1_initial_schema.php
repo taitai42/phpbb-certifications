@@ -38,10 +38,10 @@ class m1_initial_schema extends \phpbb\db\migration\migration
                 $this->table_prefix . 'certifications_interviews' => [
                     'COLUMNS'     => [
                         'interview_id'   => ['UINT', null, 'auto_increment'],
-                        'date_start'     => ['TIMESTAMP', null],
-                        'date_end'       => ['TIMESTAMP', null],
+                        'creneaux_id'    => ['UINT', null],
                         'user_id'        => ['UINT', null],
                         'interviewer_id' => ['UINT', null],
+                        'file_url'       => ['TEXT', ""],
                     ],
                     'PRIMARY_KEY' => 'interview_id',
                 ],

@@ -2,11 +2,19 @@
 
 <h2>Certifications</h2>
 
-{% if interview_list|length > 0 %}
+{% if loops.interviews|length > 0 %}
 <h3> Rendez-vous planifies</h3>
-
-{% for int in interview_list %}
-{% endfor %}
+<ul>
+{% for int in loops.interviews %}
+    <li>le {{ int['date']}} avec
+        <a target="_blank" href="/memberlist.php?mode=viewprofile&u={{int['interviewer_id']}}"
+           style="color: #{{ int['user_colour'] }}">{{ int['username']}}</a>
+        <a class="btn btn-primary" href="/{{int['file_url']}}" target="_blank">voir l'image fournie</a>
+        <a class="btn btn-success" href="">Valider la certification</a>
+        <a class="btn btn-danger" href="">rejeter la certification</a>
+    </li>{% endfor %}
+</ul>
+<br><br>
 {% endif %}
 <h3> Creneaux de disponibilites</h3>
 

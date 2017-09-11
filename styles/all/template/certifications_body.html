@@ -2,6 +2,12 @@
 
 <h2>Certifications</h2>
 
+{% if interview is defined %}
+<br><br>
+<h2>Votre entretien de certification est programme le {{ interview['date']}} avec <a target="_blank" href="/memberlist.php?mode=viewprofile&u={{interview['interviewer_id']}}" style="color: #{{interview['user_colour']}}">{{ interview['username']}}</a></h2>
+
+<br><br>
+{%endif%}
 <h3> félicitations, vous remplissez toutes les conditions requises pour la certifications !</h3>
 
 <br><br>
@@ -12,57 +18,58 @@
 <p> Pour proceder a votre certifications, veuillez remplir le formulaire ci-dessous, une administratrice vous contactera
     ensuite
     pour ... du blabla qui explique la procedure de verification</p>
+<hr><br><br>
 
-{% if loops.creneaux|length > 0 %}
-<form action="" method="POST" enctype="multipart/form-data">
+    {% if loops.creneaux|length > 0%}
+    <form action="" method="POST" enctype="multipart/form-data">
 
-    <fieldset>
-        <dl>
-            <dt>
-                Photo preuve
-            </dt>
-            <dd>
-                <input type="file" name="id" id="avatar_upload_file" class="inputbox autowidth">
-            </dd>
-
-
-        </dl>
-
-        <dl>
-            <dt>
-                Choisir un creneau
-            </dt>
-            <dd>
-                {% set data = "" %}
-                {% for slot in loops.creneaux %}
-                    {% if slot['date_start'] is not same as(data) %}
-                {% if loop['index0'] > 0%} <br><br> {%endif%}
-                        {% set data = slot['date_start']%}
-                        <b>{{ data}} </b><br>
-                    {% endif %}
-                <h4 style="display: inline"><span data-id="{{slot['creneaux_id']}}"
-                                                  class="label label-default">{{slot['time_start']}} - {{slot['time_end']}} </span>
-                </h4>
-                {% endfor %}
-                <input type="hidden" name="slot">
-            </dd>
+        <fieldset>
+            <dl>
+                <dt>
+                    Photo preuve
+                </dt>
+                <dd>
+                    <input type="file" name="id" id="avatar_upload_file" class="inputbox autowidth" required>
+                </dd>
 
 
-        </dl>
-        <dl>
-            <dt>
-                Soumettre
-            </dt>
-            <dd>
-                <input style="text-align: center" type="submit" value="soumettre la demande">
-            </dd>
+            </dl>
+
+            <dl>
+                <dt>
+                    Choisir un creneau
+                </dt>
+                <dd>
+                    {% set data = "" %}
+                    {% for slot in loops.creneaux %}
+                        {% if slot['date_start'] is not same as(data) %}
+                    {% if loop['index0'] > 0%} <br><br> {%endif%}
+                            {% set data = slot['date_start']%}
+                            <b>{{ data}} </b><br>
+                        {% endif %}
+                    <h4 style="display: inline"><span data-id="{{slot['creneaux_id']}}"
+                                                      class="label label-default">{{slot['time_start']}} - {{slot['time_end']}} </span>
+                    </h4>
+                    {% endfor %}
+                    <input type="hidden" name="slot" required>
+                </dd>
 
 
-        </dl>
-    </fieldset>
-</form>
-{% else %}
-<p>Desole, il n'y a aucun creneau de certification disponible pour le moment, veuillez revenir plus tard
-    ou contacter un membre du comite de certification!</p>
-{% endif %}
+            </dl>
+            <dl>
+                <dt>
+                    Soumettre
+                </dt>
+                <dd>
+                    <input style="text-align: center" type="submit" value="soumettre la demande">
+                </dd>
+
+
+            </dl>
+        </fieldset>
+    </form>
+    {% else %}
+    <p>Desole, il n'y a aucun creneau de certification disponible pour le moment, veuillez revenir plus tard
+        ou contacter un membre du comite de certification!</p>
+    {% endif %}
 <!-- INCLUDE overall_footer.html -->

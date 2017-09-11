@@ -23,4 +23,6 @@ $lang = array_merge($lang, array(
 	'ACP_DEMO'					=> 'Settings',
 	'ACP_DEMO_GOODBYE'			=> 'Should say goodbye?',
 	'ACP_DEMO_SETTING_SAVED'	=> 'Settings have been saved successfully!',
+    'SLOT_NOT_FILLED' => 'slot is not filled',
+    'PIC_MISSING' => 'picture is missing',
 ));
