@@ -14,6 +14,7 @@ namespace taitai42\certifications\event;
  */
 use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use taitai42\certifications\config\config;
 
 /**
  * Event listener
@@ -62,12 +63,12 @@ class main_listener implements EventSubscriberInterface
         if (file_exists('includes/functions_user.php')) {
             require_once 'includes/functions_user.php';
 
-            $canSee = in_array($this->user->data['group_id'], [2, 3, 7]) && $this->user->data['user_gender'] == 2;
+            $canSee = in_array($this->user->data['group_id'], [2, 3, 7]) && $this->user->data['user_gender'] == 2 && $this->user->data['user_posts'] >= config::MIN_MESSAGES;
             if ($this->user->data['user_id'] != ANONYMOUS) {
                 $this->template->assign_vars([
                     'U_CERTIFICATIONS_PAGE'      => $this->helper->route('certifications_user'),
                     'U_CAN_SEE'                  => $canSee,
-                    'U_MANAGER'                  => group_memberships(9, $this->user->data['user_id'], true),
+                    'U_MANAGER'                  => group_memberships(config::CERTIFICATION_GROUP, $this->user->data['user_id'], true),
                     'U_CERTIFICATION_MANAGEMENT' => $this->helper->route('certifications_management'),
                 ]);
             }

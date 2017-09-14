@@ -11,6 +11,7 @@ namespace taitai42\certifications\controller;
 
 use phpbb\datetime;
 use phpbb\routing\router;
+use taitai42\certifications\config\config;
 
 class main
 {
@@ -47,12 +48,23 @@ class main
         $this->user = $user;
         $this->db = $db;
         $this->table_prefix = $table_prefix;
-
+        if (file_exists('includes/functions_user.php')) {
+            require_once 'includes/functions_user.php';
+        } else {
+            trigger_error('NO_USER_FILE');
+        }
     }
 
 
     public function handle()
     {
+
+        if (!in_array($this->user->data['group_id'], [2, 3, 5, 7])
+            || !$this->user->data['user_gender'] == 2
+            || $this->user->data['user_posts'] < config::MIN_MESSAGES
+        ) {
+            trigger_error('NO_REQUIRE_DATA');
+        }
         $timestamp_start = strtotime("monday this week");
         $timestamp_end = strtotime("monday next week");
 
@@ -67,30 +79,35 @@ class main
     public function submit()
     {
         global $symfony_request;
-
+        if (!in_array($this->user->data['group_id'], [2, 3, 5, 7])
+            || !$this->user->data['user_gender'] == 2
+            || $this->user->data['user_posts'] < config::MIN_MESSAGES
+        ) {
+            trigger_error('NO_REQUIRE_DATA');
+        }
 
         $slot = $symfony_request->request->get('slot', "");
         $file = $symfony_request->files->get('id', null);
 
         $this->checkParameters($slot, $file);
-        $filename = md5($this->user->data['user_id']).'_certif.'.$file->getClientOriginalExtension();
+        $filename = md5($this->user->data['user_id']) . '_certif.' . $file->getClientOriginalExtension();
         $file->move('./images/avatars/upload', $filename);
 
         // look for wanted slot
-        $sql = "select * from {$this->table_prefix}certifications_creneaux where creneaux_id = " . (int) $slot;
+        $sql = "select * from {$this->table_prefix}certifications_creneaux where creneaux_id = " . (int)$slot;
         $result = $this->db->sql_query($sql);
         $slotresult = $this->db->sql_fetchrow($result);
 
         // delete current interview
-        $sql = "delete from {$this->table_prefix}certifications_interviews where user_id = " . (int) $this->user->data['user_id'];
+        $sql = "delete from {$this->table_prefix}certifications_interviews where user_id = " . (int)$this->user->data['user_id'];
         $result = $this->db->sql_query($sql);
 
         // insert new interview
         $sql = "insert into {$this->table_prefix}certifications_interviews values(null, 
-        ". (int) $slot .", "
-            . (int) $this->user->data['user_id'] . ","
-            . (int) $slotresult['user_id'] .",
-            'images/avatars/upload/". $filename ."')";
+        " . (int)$slot . ", "
+            . (int)$this->user->data['user_id'] . ","
+            . (int)$slotresult['user_id'] . ",
+            'images/avatars/upload/" . $filename . "')";
         $this->db->sql_query($sql);
 
         return redirect("/certifications");
@@ -99,6 +116,11 @@ class main
 
     public function manage()
     {
+        if (!group_memberships(config::CERTIFICATION_GROUP, $this->user->data['user_id'], true)
+            && !group_memberships(2, $this->user->data['user_id'], true)
+        ) {
+            trigger_error('NO_CERTIF_GROUP');
+        }
         $timestamp_start = strtotime("monday this week");
         $timestamp_end = strtotime("monday next week");
 
@@ -116,6 +138,10 @@ class main
     public function saveCreneaux()
     {
         global $symfony_request;
+
+        if (!group_memberships(config::CERTIFICATION_GROUP, $this->user->data['user_id'], true)) {
+            trigger_error('NO_CERTIF_GROUP');
+        }
 
         $timestamp_start = strtotime("monday this week");
         $timestamp_end = strtotime("monday next week");
@@ -135,6 +161,26 @@ class main
         }
 
         return redirect('/certification/manage/');
+    }
+
+    public function valid($id)
+    {
+        if (!$ret = group_user_add(config::CERTIFIE_GROUP, [$id])) {
+            $sql = "delete from {$this->table_prefix}certifications_interviews where user_id =" . (int)$id;
+            $this->db->sql_query($sql);
+        } else {
+            trigger_error('erreur lors de l\'ajout '.$ret );
+        }
+
+        return redirect($this->helper->route('certifications_management'));
+    }
+
+    public function reject($id)
+    {
+        $sql = "delete from {$this->table_prefix}certifications_interviews where user_id =" . (int)$id;
+        $this->db->sql_query($sql);
+
+        return redirect($this->helper->route('certifications_management'));
     }
 
     /**
@@ -211,7 +257,7 @@ class main
             $date = (new datetime($this->user))->setTimestamp($row['date_start']);
 
 
-            $this->template->assign_block_vars('interviews',  array_merge($row, [
+            $this->template->assign_block_vars('interviews', array_merge($row, [
                 'date' => $date->format('l j F \a H:i'),
             ]));
         }
@@ -313,7 +359,7 @@ class main
 
     private function checkCreneaux($slot)
     {
-        $sql = "select * from {$this->table_prefix}certifications_interviews where creneaux_id = " . (int) $slot;
+        $sql = "select * from {$this->table_prefix}certifications_interviews where creneaux_id = " . (int)$slot;
         $result = $this->db->sql_query($sql);
         if ($result->num_rows !== 0) {
             trigger_error('SLOT_TAKEN');

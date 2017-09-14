@@ -19,10 +19,9 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'CERTIFICATIONS_PAGE'			=> 'certifications',
-	'ACP_DEMO_TITLE'			=> 'Demo Module',
-	'ACP_DEMO'					=> 'Settings',
-	'ACP_DEMO_GOODBYE'			=> 'Should say goodbye?',
-	'ACP_DEMO_SETTING_SAVED'	=> 'Settings have been saved successfully!',
     'SLOT_NOT_FILLED' => 'slot is not filled',
     'PIC_MISSING' => 'picture is missing',
+    'NO_REQUIRE_DATA' => 'vous ne remplissez pas les conditions requises pour etre certifie',
+    'NO_USER_FILE' => 'impossible d\'inclure les fichiers necessaires, contactez un administrateur',
+    'NO_CERTIF_GROUP' => 'Vous ne faites pas partie du comite de certification',
 ));
