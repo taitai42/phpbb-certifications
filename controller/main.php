@@ -254,10 +254,10 @@ class main
      */
     public function removeOldSlots($timestamp_start, $timestamp_end)
     {
-        $sql = "delete from {$this->table_prefix}certifications_creneaux where " . $this->db->sql_build_array("SELECT", [
+        $sql = "delete from {$this->table_prefix}certifications_creneaux  where " . $this->db->sql_build_array("SELECT", [
                 'user_id' => $this->user->data['user_id'],
             ]) . " and date_start > $timestamp_start 
-                   and date_end < $timestamp_end";
+                   and date_end < $timestamp_end and creneaux_id not in(select creneaux_id from {$this->table_prefix}certifications_interviews  where interviewer_id = {$this->user->data['user_id']})";
 
         $this->db->sql_query($sql);
 
