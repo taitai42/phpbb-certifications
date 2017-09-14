@@ -110,7 +110,7 @@ class main
             'images/avatars/upload/" . $filename . "')";
         $this->db->sql_query($sql);
 
-        return redirect("/certifications");
+        return redirect($this->helper->route('certifications_user'));
     }
 
 
@@ -160,7 +160,7 @@ class main
             }
         }
 
-        return redirect('/certification/manage/');
+        return redirect($this->helper->route('certifications_management'));
     }
 
     public function valid($id)
