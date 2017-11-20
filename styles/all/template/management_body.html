@@ -7,11 +7,11 @@
 <ul>
 {% for int in loops.interviews %}
     <li>le {{ int['date']}} avec
-        <a target="_blank" href="/memberlist.php?mode=viewprofile&u={{int['interviewer_id']}}"
-           style="color: #{{ int['user_colour'] }}">{{ int['username']}}</a>
+        <a target="_blank" href="/memberlist.php?mode=viewprofile&u={{int['asking_id']}}"
+           style="color: #{{ int['user_colour'] }}">{{ int['asking_username']}}</a>
         <a class="btn btn-primary" href="/{{int['file_url']}}" target="_blank">voir l'image fournie</a>
-        <a class="btn btn-success" href="manage/valid/{{int['user_id']}}">Valider la certification</a>
-        <a class="btn btn-danger" href="manage/reject/{{int['user_id']}}">rejeter la certification</a>
+        <a class="btn btn-success" href="manage/valid/{{int['asking_id']}}">Valider la certification</a>
+        <a class="btn btn-danger" href="manage/reject/{{int['asking_id']}}">rejeter la certification</a>
     </li>{% endfor %}
 </ul>
 <br><br>

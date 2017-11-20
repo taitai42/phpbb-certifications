@@ -91,7 +91,7 @@ class main
 
         $this->checkParameters($slot, $file);
         $filename = md5($this->user->data['user_id']) . '_certif.' . $file->getClientOriginalExtension();
-        $file->move('./images/avatars/upload', $filename);
+        $file->move('./images/certifs', $filename);
 
         // look for wanted slot
         $sql = "select * from {$this->table_prefix}certifications_creneaux where creneaux_id = " . (int)$slot;
@@ -107,7 +107,7 @@ class main
         " . (int)$slot . ", "
             . (int)$this->user->data['user_id'] . ","
             . (int)$slotresult['user_id'] . ",
-            'images/avatars/upload/" . $filename . "')";
+            'images/certifs/" . $filename . "')";
         $this->db->sql_query($sql);
 
         return redirect($this->helper->route('certifications_user'));
@@ -220,8 +220,9 @@ class main
      */
     public function prepareInterviews($timestamp_start, $timestamp_end)
     {
-        $sql = "select i.*, u.* , c.* from {$this->table_prefix}certifications_interviews  i 
+        $sql = "select i.*, u.* , ii.username as interviewer_name,ii.user_colour as interviewer_colour, c.* from {$this->table_prefix}certifications_interviews  i 
         left JOIN " . USERS_TABLE . " u on u.user_id = i.user_id
+        left JOIN " . USERS_TABLE . " ii on ii.user_id = i.interviewer_id
         left join {$this->table_prefix}certifications_creneaux c on i.creneaux_id = c.creneaux_id
           where " . $this->db->sql_build_array("SELECT", ['i.user_id' => $this->user->data['user_id']]) .
             " and c.date_start > $timestamp_start 
@@ -246,7 +247,7 @@ class main
      */
     public function prepareManageInterviews($timestamp_start, $timestamp_end)
     {
-        $sql = "select i.*, u.*, c.* from {$this->table_prefix}certifications_interviews  i 
+        $sql = "select i.*, u.username as 'asking_username', u.user_id as 'asking_id', c.* from {$this->table_prefix}certifications_interviews  i 
         left JOIN " . USERS_TABLE . " u on u.user_id = i.user_id
         left join {$this->table_prefix}certifications_creneaux c on i.creneaux_id = c.creneaux_id
           where " . $this->db->sql_build_array("SELECT", ['i.interviewer_id' => $this->user->data['user_id']]) .
@@ -255,7 +256,6 @@ class main
         $result = $this->db->sql_query($sql);
         while ($row = $this->db->sql_fetchrow($result)) {
             $date = (new datetime($this->user))->setTimestamp($row['date_start']);
-
 
             $this->template->assign_block_vars('interviews', array_merge($row, [
                 'date' => $date->format('l j F \a H:i'),

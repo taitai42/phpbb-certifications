@@ -4,20 +4,25 @@
 
 {% if interview is defined %}
 <br><br>
-<h2>Votre entretien de certification est programme le {{ interview['date']}} avec <a target="_blank" href="/memberlist.php?mode=viewprofile&u={{interview['interviewer_id']}}" style="color: #{{interview['user_colour']}}">{{ interview['username']}}</a></h2>
+<h2>Votre entretien de certification est programme le {{ interview['date']}} avec <a target="_blank" href="/memberlist.php?mode=viewprofile&u={{interview['interviewer_id']}}" style="color: #{{interview['interviewer_colour']}}">{{ interview['interviewer_name']}}</a></h2>
 
 <br><br>
 {%endif%}
 <h3> félicitations, vous remplissez toutes les conditions requises pour la certifications !</h3>
 
 <br><br>
-<p> texte qui decris comment c'est trop un avantage de fou d'etre certifie parce que ca rapporte des millions pour se
-    payer de la coke et un yacht
+
+<p>La certification vous apporte le grade de "certifiée". Ce grade colore votre pseudo en rose et prouve à l'ensemble des utilisateurs que vous êtes une femme. Attention, ce grade ne concerne que votre sexe, et n'est pas un examen d'aptitude.<br>
+  Pensez à prévoir une carte d'identité en cas de doute sur votre âge. Pour rappel, les mineurs ne sont pas tolérés.
+   
 </p>
 
-<p> Pour proceder a votre certifications, veuillez remplir le formulaire ci-dessous, une administratrice vous contactera
-    ensuite
-    pour ... du blabla qui explique la procedure de verification</p>
+<p>
+Hébergez votre Photo Preuve en cliquant sur "Parcourir". Pour votre photo preuve, il vous faudra prendre une photo de vous avec votre pseudo et la date du jour écris sur un papier. Toute photo illisible se verra refusée. Les photos ne sont pas conservées.
+</p>
+<p>
+
+  En choisissant un créneau, vous vous engagez à le respecter. En cas d’indisponibilité, pensez à prévenir la membre du comité qui s'occupe de vous !</p>
 <hr><br><br>
 
     {% if loops.creneaux|length > 0%}
