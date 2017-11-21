@@ -91,6 +91,7 @@ class main
 
         $this->checkParameters($slot, $file);
         $filename = md5($this->user->data['user_id']) . '_certif.' . $file->getClientOriginalExtension();
+
         $file->move('./images/certifs', $filename);
 
         // look for wanted slot
@@ -165,7 +166,7 @@ class main
 
     public function valid($id)
     {
-        if (!$ret = group_user_add(config::CERTIFIE_GROUP, [$id])) {
+        if (!$ret = group_user_add(config::CERTIFIE_GROUP, [$id], false, false, true)) {
             $sql = "delete from {$this->table_prefix}certifications_interviews where user_id =" . (int)$id;
             $this->db->sql_query($sql);
         } else {

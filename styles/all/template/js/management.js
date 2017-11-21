@@ -13,7 +13,8 @@ $(function () {
             inst.dpDiv.css({marginTop: -input.offsetHeight + 'px', marginLeft: input.offsetWidth + 'px'});
         },
         'format': 'dd/mm/yyyy',
-        'autoclose': true
+        'autoclose': true,
+	'language': 'fr'
     });
 
 
@@ -28,6 +29,7 @@ $(function () {
             inst.dpDiv.css({marginTop: -input.offsetHeight + 'px', marginLeft: input.offsetWidth + 'px'});
         },
         'format': 'dd/mm/yyyy',
+	'language': 'fr',
         'autoclose': true
     });
 
@@ -69,6 +71,7 @@ $(function () {
                 inst.dpDiv.css({marginTop: -input.offsetHeight + 'px', marginLeft: input.offsetWidth + 'px'});
             },
             'format': 'dd/mm/yyyy',
+	    'language': 'fr',
             'autoclose': true
         });
 
