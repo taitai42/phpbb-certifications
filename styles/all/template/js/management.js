@@ -42,6 +42,11 @@ $(function () {
 
 
     var tocopy = $(".tocopy").html();
+    $('#delete').on('click', function (e) {
+        e.preventDefault();
+        $('.delcreneau').trigger('click');
+        $("#addcreneau").trigger('click');
+    });
     $(".delcreneau").on('click', function (e) {
         e.preventDefault();
         $(this).closest('div').remove();
